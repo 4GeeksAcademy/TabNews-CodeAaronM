@@ -42,14 +42,14 @@ const AdministratorRegister = () => {
     };
 
     return (
-        <div className="container mt-5">
-            <h2 className="text-center">Registrarse como admin</h2>
-            <form onSubmit={handleSubmit} className="mt-4">
+        <div className="container mt-5 bg-black w-25">
+            <h2 className="text-center text-white">Registrarse como admin</h2>
+            <form onSubmit={handleSubmit} className="mt-4 bg-dark p-4 rounded">
                 <div className="mb-3">
-                    <label htmlFor="firstName" className="form-label">Nombre</label>
+                    <label htmlFor="firstName" className="form-label text-white">Nombre</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control bg-dark text-white border-light"
                         id="firstName"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
@@ -57,10 +57,10 @@ const AdministratorRegister = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="lastName" className="form-label">Apellido</label>
+                    <label htmlFor="lastName" className="form-label text-white">Apellido</label>
                     <input
                         type="text"
-                        className="form-control"
+                        className="form-control bg-dark text-white border-light"
                         id="lastName"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
@@ -68,10 +68,10 @@ const AdministratorRegister = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="email" className="form-label">Correo Electrónico</label>
+                    <label htmlFor="email" className="form-label text-white">Correo Electrónico</label>
                     <input
                         type="email"
-                        className="form-control"
+                        className="form-control bg-dark text-white border-light"
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
@@ -79,10 +79,10 @@ const AdministratorRegister = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <label htmlFor="password" className="form-label">Contraseña</label>
+                    <label htmlFor="password" className="form-label text-white">Contraseña</label>
                     <input
                         type="password"
-                        className="form-control"
+                        className="form-control bg-dark text-white border-light"
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
@@ -91,9 +91,9 @@ const AdministratorRegister = () => {
                 </div>
                 <button type="submit" className="btn btn-primary">Registrarse</button>
             </form>
-            <p className="mt-3 text-center">
+            <p className="mt-3 text-center text-white">
                 ¿Ya tienes una cuenta?{" "}
-                <Link to="/administratorLogin">Inicia sesión aquí</Link>
+                <Link to="/administratorLogin" className="text-primary">Inicia sesión aquí</Link>
             </p>
         </div>
     );

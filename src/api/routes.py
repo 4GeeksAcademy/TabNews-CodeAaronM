@@ -737,29 +737,29 @@ def get_Api_Article():
     try:
         response = requests.get('https://newsapi.org/v2/top-headlines', params={
             'country': 'us',
-            'apiKey': '53b4cc2189164a09a77e52459edaa684'  # Asegúrate de que la clave sea válida
+            'apiKey': '53b4cc2189164a09a77e52459edaa684'
         })
-
-        print("Estado de la respuesta de la API externa:", response.status_code)
-        print("Contenido de la respuesta de la API externa:", response.text)
 
         if response.status_code != 200:
             return jsonify({'error': 'Error al obtener datos de la API externa'}), 500
 
         data = response.json()
 
-        for article in data.get('articles', []):  # Usar .get para evitar problemas si 'articles' no está
-            title = article.get('title')  # No añadir valor por defecto, validar si es None
-            description = article.get('description')  
-            url_to_image = article.get('urlToImage')  
-            published_at = article.get('publishedAt')  
-            url = article.get('url')  
+        # Establecer valores predeterminados para la imagen y la descripción
+        default_image = "https://t3.ftcdn.net/jpg/03/49/45/70/360_F_349457036_XWvovNpNk79ftVg4cIpBhJurdihVoJ2B.jpg"  # URL de imagen por defecto
+        default_description = "Descripción no disponible en este momento."  # Descripción por defecto
 
-            author_name = article.get('author')  # No añadir valor por defecto
-            source_name = article.get('source', {}).get('name')  # No añadir valor por defecto
+        for article in data.get('articles', []):
+            title = article.get('title')
+            description = article.get('description') or default_description  # Asignar descripción por defecto
+            url_to_image = article.get('urlToImage') or default_image  # Asignar imagen por defecto
+            published_at = article.get('publishedAt')
+            url = article.get('url')
+            author_name = article.get('author')
+            source_name = article.get('source', {}).get('name')
 
-            # Validar que ninguno de estos campos críticos sea None o vacío
-            if not all([title, description, url_to_image, url, author_name, source_name, published_at]):
+            # Validar que los campos críticos no sean None
+            if not all([title, url, author_name, source_name, published_at]):
                 print(f"Artículo ignorado por falta de datos: {article}")
                 continue
 
@@ -774,22 +774,21 @@ def get_Api_Article():
             # Verificar si el artículo ya existe en la base de datos (por título y URL)
             existing_article = Article.query.filter_by(title=title, source=url).first()
             if existing_article:
-                print(f"Artículo ya existe en la base de datos: {title}")
                 continue  # Saltar si el artículo ya existe
 
             # Verificar si el autor ya existe en la base de datos
             author = Author.query.filter_by(name=author_name).first()
             if not author:
-                author = Author(name=author_name, description=None, photo=None)  
+                author = Author(name=author_name, description=None, photo=None)
                 db.session.add(author)
-                db.session.flush()  # Guarda el autor temporalmente para obtener su ID
+                db.session.flush()
 
             # Verificar si el periódico ya existe en la base de datos
             newspaper = Newspaper.query.filter_by(name=source_name).first()
             if not newspaper:
                 newspaper = Newspaper(name=source_name)
                 db.session.add(newspaper)
-                db.session.flush()  # Guarda el periódico temporalmente para obtener su ID
+                db.session.flush()
 
             # Crear el nuevo artículo
             new_article = Article(
@@ -799,20 +798,20 @@ def get_Api_Article():
                 published_date=published_at,
                 source=url,
                 link=url,
-                author_id=author.id,  # Asociar el ID del autor
-                newspaper_id=newspaper.id,  # Asociar el ID del periódico
-                category_id=1  # Suponiendo que tienes una categoría fija por ahora
+                author_id=author.id,
+                newspaper_id=newspaper.id,
+                category_id=1
             )
 
             db.session.add(new_article)
 
-        db.session.commit()  # Confirmar todos los cambios
+        db.session.commit()
         return jsonify(message="Artículos creados exitosamente"), 201
 
     except Exception as e:
-        db.session.rollback()  # Deshacer cambios en caso de error
-        print(f"Error al procesar la solicitud: {str(e)}")
+        db.session.rollback()
         return jsonify({'error': 'Error al procesar la solicitud: ' + str(e)}), 500
+
 
 @api.route('/article/<int:article_id>/category', methods=['PUT'])
 def update_article_category(article_id):
